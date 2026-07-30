@@ -1,14 +1,19 @@
 use bevy::prelude::*;
+use bevy::input::mouse::AccumulatedMouseMotion;
 
 #[derive(Component, Default)]
 pub struct Player {
-    pub look_direction: Vec3
+    pub look_direction: Vec3,
+    pub yaw: f32,
+    pub pitch: f32,
 }
 
 pub fn player_setup(mut commands: Commands) {
     commands.spawn((
         Player {
-            look_direction: Vec3::NEG_Z
+            look_direction: Vec3::NEG_Z,
+            yaw: 0.0,
+            pitch: 0.0,
         },
         Transform::default(),
         GlobalTransform::default()
@@ -20,7 +25,7 @@ pub fn player_move(
     time: Res<Time>,
     mut player_query: Query<(&mut Transform, &mut Player), With<Player>>
 ) {
-    let (mut player_transform, mut player) = player_query.single_mut().unwrap();
+    let (mut player_transform, player) = player_query.single_mut().unwrap();
     let mut direction = Vec3::ZERO;
     if keyboard.pressed(KeyCode::KeyW) {
         direction.z += 1.0;
@@ -49,11 +54,21 @@ pub fn player_move(
  
 }
 
-use bevy::input::mouse::MouseMotion;
 pub fn player_rotate(
-    mut mouse_motion: EventReader<MouseMotion>,
+    mouse_motion: Res<AccumulatedMouseMotion>,
+    time: Res<Time>,
     mut player_query: Query<&mut Player>,
 ) {
     let mut player = player_query.single_mut().unwrap();
-    // TODO
+    let delta = mouse_motion.delta;
+    if delta == Vec2::ZERO {return}
+    let sensitivity = 0.05;
+    player.yaw += delta.x * sensitivity * time.delta_secs();
+    player.pitch -= delta.y * sensitivity * time.delta_secs();
+    player.pitch = player.pitch.clamp(-1.5, 1.5);
+    player.look_direction = Vec3::new(
+        player.yaw.cos() * player.pitch.cos(),
+        player.pitch.sin(),
+        player.yaw.sin() * player.pitch.cos()
+    ).normalize();
 }
