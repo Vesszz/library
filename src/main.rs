@@ -3,10 +3,12 @@ use bevy::prelude::*;
 mod player;
 use player::PlayerPlugin;
 use bevy::window::{CursorGrabMode, PrimaryWindow, CursorOptions};
+mod fps;
+use fps::FpsPlugin;
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins, PhysicsPlugins::default(), PlayerPlugin))
+        .add_plugins((DefaultPlugins, PhysicsPlugins::default(), PlayerPlugin, FpsPlugin))
         .add_systems(Startup, (setup_world, setup_cursor))
         .run();
 }
