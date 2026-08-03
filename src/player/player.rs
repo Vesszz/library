@@ -48,7 +48,7 @@ pub fn player_move(
         
         let world_direction = forward * direction.z + right * direction.x;
         
-        let speed = 1.0;
+        let speed = 5.0;
         player_transform.translation += world_direction * speed * time.delta_secs();
     }
  

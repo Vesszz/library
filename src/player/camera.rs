@@ -11,7 +11,7 @@ pub fn camera_setup(mut commands: Commands) {
     ));
 }
 
-pub fn camera_system( // look_at + move
+pub fn camera_system(
     player_query: Query<(&Transform, &Player), Without<PlayerCamera>>,
     mut player_camera_query: Query<&mut Transform, With<PlayerCamera>>
 ) {
